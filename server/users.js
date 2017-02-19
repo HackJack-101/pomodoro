@@ -26,6 +26,12 @@ class User {
         this.pomodoroDuration = parseInt(duration);
     }
 
+    startBreak(duration, state) {
+        this.state = state;
+        this.pomodoroStart = Date.now();
+        this.pomodoroDuration = parseInt(duration);
+    }
+
     stopPomodoro() {
         this.state = 0;
         this.pomodoroStart = null;
@@ -55,13 +61,21 @@ router.post('/user', function(req, res) {
 });
 
 router.post('/start', function(req, res) {
-    console.log(req.body);
     console.log(users);
     let user = users.filter((user) => {
         return user.getID() === req.body.id;
     });
     user = user[0];
     user.startPomodoro(req.body.duration);
+    res.json(users);
+});
+
+router.post('/break', function(req, res) {
+    let user = users.filter((user) => {
+        return user.getID() === req.body.id;
+    });
+    user = user[0];
+    user.startBreak(req.body.duration, req.body.state);
     res.json(users);
 });
 
