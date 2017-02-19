@@ -1,0 +1,5 @@
+[0218/060443.194:ERROR:exception_handler_server.cc(524)] ConnectNamedPipe: Le canal de communication est sur le point d’être fermé. (0xE8)
+[0218/060733.869:ERROR:exception_handler_server.cc(524)] ConnectNamedPipe: Le canal de communication est sur le point d’être fermé. (0xE8)
+[0218/060828.936:ERROR:exception_handler_server.cc(524)] ConnectNamedPipe: Le canal de communication est sur le point d’être fermé. (0xE8)
+[0218/060903.153:ERROR:exception_handler_server.cc(524)] ConnectNamedPipe: Le canal de communication est sur le point d’être fermé. (0xE8)
+[0218/221531.654:ERROR:exception_handler_server.cc(524)] ConnectNamedPipe: Le canal de communication est sur le point d’être fermé. (0xE8)
