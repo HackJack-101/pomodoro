@@ -244,20 +244,25 @@
         },
         mounted()
         {
-            this.$http.get(prefixURL + 'api/users').then((response) => {
-                response.json().then((message) => {
-                    this.users = message;
-                }, () => {
-                    console.error('Error GET /api/users');
-                });
-            });
-
             let self = this;
+            let getUsers = function() {
+                self.$http.get(prefixURL + 'api/users').then((response) => {
+                    response.json().then((message) => {
+                        self.users = message;
+                    }, () => {
+                        console.error('Error GET /api/users');
+                    });
+                });
+            };
+
             let updateNow = function() {
                 self.count.now = Date.now();
             };
+
+            getUsers();
             updateNow();
             window.setInterval(updateNow, 1000);
+            window.setInterval(getUsers, 10000);
         },
         computed: {
             now: function() {
