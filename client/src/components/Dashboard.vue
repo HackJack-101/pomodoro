@@ -55,12 +55,161 @@
             <form v-on:submit.prevent="addUser" id="addUser">
                 <div class="fields">
                     <label for="login">Name :</label>
-                    <input type="text" id="name" v-model="newUser.name"/>
+                    <input type="text" id="name" v-model="newUser.name" autocomplete="off"/>
                 </div>
             </form>
         </div>
     </div>
 </template>
+
+<script>
+    let prefixURL;
+    /** Development configuration **/
+    prefixURL = '//localhost:3000/';
+    /** Production configuration **/
+    prefixURL = '/';
+    export default{
+        data(){
+            return {
+                users: [],
+                newUser: {
+                    name: ''
+                },
+                count: {
+                    now: Date.now()
+                }
+            }
+
+        },
+        mounted()
+        {
+            let self = this;
+            let getUsers = function() {
+                self.$http.get(prefixURL + 'api/users').then((response) => {
+                    response.json().then((message) => {
+                        self.users = message;
+                    }, () => {
+                        console.error('Error GET /api/users');
+                    });
+                });
+            };
+
+            let updateNow = function() {
+                self.count.now = Date.now();
+            };
+
+            getUsers();
+            updateNow();
+            window.setInterval(updateNow, 1000);
+            window.setInterval(getUsers, 10000);
+        },
+        computed: {
+            now: function() {
+                return this.count.now;
+            }
+        },
+        methods: {
+            getClassState: function(state) {
+                switch (state) {
+                    case 1:
+                        return 'working';
+                    case 2:
+                    case 3:
+                        return 'break';
+                    default:
+                        return 'not-working';
+                }
+            },
+            displayTime: function(ms, id, state) {
+                if (ms < 0) {
+                    switch (state) {
+                        case 1:
+                            this.stopPomodoro(id);
+                            break;
+                        case 2:
+                        case 3:
+                        default:
+                            this.startPomodoro(id);
+                    }
+                    return '';
+                } else {
+                    let s = Math.trunc(ms / 1000);
+                    let m = Math.trunc(s / 60);
+                    let remainSec = s - (m * 60);
+                    return (m < 10 ? '0' : '') + m + ':' + (remainSec < 10 ? '0' : '') + remainSec;
+                }
+            },
+            addUser: function() {
+                this.$http.post(prefixURL + 'api/user', JSON.stringify(this.newUser)).then((response) => {
+                    response.json().then((message) => {
+                        this.users = message;
+                    });
+                    this.newUser.name = '';
+                }, (error) => {
+                    console.warn('Error POST /api/user');
+                });
+            },
+            startPomodoro: function(id) {
+                this.$http.post(prefixURL + 'api/start', JSON.stringify({id: id, duration: (25 * 60 * 1000)})).then((response) => {
+                    response.json().then((message) => {
+                        this.users = message;
+                    });
+                }, (error) => {
+                    console.warn('Error POST /api/start');
+                });
+            },
+            shortBreak: function(id) {
+                this.$http.post(prefixURL + 'api/break', JSON.stringify({id: id, duration: (5 * 60 * 1000), state: 2})).then((response) => {
+                    response.json().then((message) => {
+                        this.users = message;
+                    });
+                }, (error) => {
+                    console.warn('Error POST /api/break');
+                });
+            },
+            longBreak: function(id) {
+                this.$http.post(prefixURL + 'api/break', JSON.stringify({id: id, duration: (15 * 60 * 1000), state: 3})).then((response) => {
+                    response.json().then((message) => {
+                        this.users = message;
+                    });
+                }, (error) => {
+                    console.warn('Error POST /api/break');
+                });
+            },
+            customLongBreak: function(id) {
+                let customDuration = parseInt(window.prompt('Enter your custom long break : (in min', '15'));
+                this.$http.post(prefixURL + 'api/break', JSON.stringify({id: id, duration: (customDuration * 60 * 1000), state: 3})).then((response) => {
+                    response.json().then((message) => {
+                        this.users = message;
+                    });
+                }, (error) => {
+                    console.warn('Error POST /api/break');
+                });
+            },
+            stopPomodoro: function(id) {
+                this.$http.post(prefixURL + 'api/stop', JSON.stringify({id: id})).then((response) => {
+                    response.json().then((message) => {
+                        this.users = message;
+                    });
+                }, (error) => {
+                    console.warn('Error POST /api/start');
+                });
+            },
+            deleteUser: function(id, name) {
+                if (window.confirm("This action will delete the user " + name + ". Are you sure?")) {
+                    this.$http.post(prefixURL + 'api/delete', JSON.stringify({id: id})).then((response) => {
+                        response.json().then((message) => {
+                            this.users = message;
+                        });
+                    }, (error) => {
+                        console.warn('Error POST /api/delete');
+                    });
+                }
+            }
+        }
+    }
+</script>
+
 <style>
     .actions {
         margin-top: 10px;
@@ -222,151 +371,3 @@
         font-weight: bold;
     }
 </style>
-
-<script>
-    let prefixURL;
-    /** Development configuration **/
-    prefixURL = '//localhost:3000/';
-    /** Production configuration **/
-    prefixURL = '/';
-    export default{
-        data(){
-            return {
-                users: [],
-                newUser: {
-                    name: ''
-                },
-                count: {
-                    now: Date.now()
-                }
-            }
-
-        },
-        mounted()
-        {
-            let self = this;
-            let getUsers = function() {
-                self.$http.get(prefixURL + 'api/users').then((response) => {
-                    response.json().then((message) => {
-                        self.users = message;
-                    }, () => {
-                        console.error('Error GET /api/users');
-                    });
-                });
-            };
-
-            let updateNow = function() {
-                self.count.now = Date.now();
-            };
-
-            getUsers();
-            updateNow();
-            window.setInterval(updateNow, 1000);
-            window.setInterval(getUsers, 10000);
-        },
-        computed: {
-            now: function() {
-                return this.count.now;
-            }
-        },
-        methods: {
-            getClassState: function(state) {
-                switch (state) {
-                    case 1:
-                        return 'working';
-                    case 2:
-                    case 3:
-                        return 'break';
-                    default:
-                        return 'not-working';
-                }
-            },
-            displayTime: function(ms, id, state) {
-                if (ms < 0) {
-                    switch (state) {
-                        case 1:
-                            this.stopPomodoro(id);
-                            break;
-                        case 2:
-                        case 3:
-                        default:
-                            this.startPomodoro(id);
-                    }
-                    return '';
-                } else {
-                    let s = Math.trunc(ms / 1000);
-                    let m = Math.trunc(s / 60);
-                    let remainSec = s - (m * 60);
-                    return (m < 10 ? '0' : '') + m + ':' + (remainSec < 10 ? '0' : '') + remainSec;
-                }
-            },
-            addUser: function() {
-                this.$http.post(prefixURL + 'api/user', JSON.stringify(this.newUser)).then((response) => {
-                    response.json().then((message) => {
-                        this.users = message;
-                    });
-                    this.newUser.name = '';
-                }, (error) => {
-                    console.warn('Error POST /api/user');
-                });
-            },
-            startPomodoro: function(id) {
-                this.$http.post(prefixURL + 'api/start', JSON.stringify({id: id, duration: (25 * 60 * 1000)})).then((response) => {
-                    response.json().then((message) => {
-                        this.users = message;
-                    });
-                }, (error) => {
-                    console.warn('Error POST /api/start');
-                });
-            },
-            shortBreak: function(id) {
-                this.$http.post(prefixURL + 'api/break', JSON.stringify({id: id, duration: (5 * 60 * 1000), state: 2})).then((response) => {
-                    response.json().then((message) => {
-                        this.users = message;
-                    });
-                }, (error) => {
-                    console.warn('Error POST /api/break');
-                });
-            },
-            longBreak: function(id) {
-                this.$http.post(prefixURL + 'api/break', JSON.stringify({id: id, duration: (15 * 60 * 1000), state: 3})).then((response) => {
-                    response.json().then((message) => {
-                        this.users = message;
-                    });
-                }, (error) => {
-                    console.warn('Error POST /api/break');
-                });
-            },
-            customLongBreak: function(id) {
-                let customDuration = parseInt(window.prompt('Enter your custom long break : (in min', '15'));
-                this.$http.post(prefixURL + 'api/break', JSON.stringify({id: id, duration: (customDuration * 60 * 1000), state: 3})).then((response) => {
-                    response.json().then((message) => {
-                        this.users = message;
-                    });
-                }, (error) => {
-                    console.warn('Error POST /api/break');
-                });
-            },
-            stopPomodoro: function(id) {
-                this.$http.post(prefixURL + 'api/stop', JSON.stringify({id: id})).then((response) => {
-                    response.json().then((message) => {
-                        this.users = message;
-                    });
-                }, (error) => {
-                    console.warn('Error POST /api/start');
-                });
-            },
-            deleteUser: function(id, name) {
-                if (window.confirm("This action will delete the user " + name + ". Are you sure?")) {
-                    this.$http.post(prefixURL + 'api/delete', JSON.stringify({id: id})).then((response) => {
-                        response.json().then((message) => {
-                            this.users = message;
-                        });
-                    }, (error) => {
-                        console.warn('Error POST /api/delete');
-                    });
-                }
-            }
-        }
-    }
-</script>
