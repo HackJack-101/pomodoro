@@ -244,7 +244,7 @@
         },
         mounted()
         {
-            this.$http.get('//localhost:3000/api/users').then((response) => {
+            this.$http.get(prefixURL + 'api/users').then((response) => {
                 response.json().then((message) => {
                     this.users = message;
                 }, () => {
