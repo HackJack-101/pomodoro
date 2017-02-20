@@ -1,7 +1,7 @@
 {
-  "name": "client",
+  "name": "pomodoro-dashboard",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "A Pomodoro Dashboard",
   "author": "Jack3113 <jack03113@gmail.com>",
   "private": true,
   "scripts": {

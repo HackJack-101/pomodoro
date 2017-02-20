@@ -1,20 +1,21 @@
 {
   "name": "pomodoro",
-  "description": "A Vue.js project",
+  "description": "A Pomodoro Dashboard",
   "author": "HackJack <admin@hackjack.info>",
   "private": true,
   "version": "0.0.1",
   "dependencies": {
     "body-parser": "^1.16.1",
-    "connect-history-api-fallback": "^1.3.0",
     "express": "^4.14.1",
-    "identicon.js": "^2.1.0"
+    "identicon.js": "^2.1.0",
+    "path": "^0.12.7"
   },
   "engines": {
     "node": ">= 4.0.0",
     "npm": ">= 3.0.0"
   },
   "scripts": {
-    "serve": "node server/server.js"
+    "serve": "node server/server.js",
+    "build": "cd client && node build/build.js"
   }
 }
