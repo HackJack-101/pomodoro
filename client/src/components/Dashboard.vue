@@ -118,18 +118,18 @@
         position: absolute;
         top: -10px;
         right: -10px;
-        z-index: 2;
-        border-radius: 12px;
+        z-index: 1;
+        border-radius: 30px;
         display: block;
-        width: 22px;
+        width: 28px;
         text-align: center;
-        height: 21px;
+        height: 28px;
         margin: auto;
-        font-weight: bold;
+        font-weight: 700;
         cursor: pointer;
         background: #bdbdbd;
         color: #fff;
-        border: solid 1px #454545;
+        border: 4px solid #454545;
     }
 
     .user-container {
