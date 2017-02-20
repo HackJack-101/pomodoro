@@ -1,4 +1,6 @@
 const express = require('express');
+const md5 = require('md5');
+const Identicon = require('identicon.js');
 const router = express.Router();
 let ids = 1;
 
@@ -6,7 +8,7 @@ class User {
     constructor(name) {
         this.id = ids++;
         this.name = name;
-        this.picture = null;
+        this.picture = new Identicon(md5(name)).toString();
         this.state = 0;
         this.pomodoroStart = null;
         this.pomodoroDuration = 0;
@@ -65,8 +67,10 @@ router.post('/start', function(req, res) {
     let user = users.filter((user) => {
         return user.getID() === req.body.id;
     });
-    user = user[0];
-    user.startPomodoro(req.body.duration);
+    if (user.length > 0) {
+        user = user[0];
+        user.startPomodoro(req.body.duration);
+    }
     res.json(users);
 });
 
@@ -74,16 +78,29 @@ router.post('/break', function(req, res) {
     let user = users.filter((user) => {
         return user.getID() === req.body.id;
     });
-    user = user[0];
-    user.startBreak(req.body.duration, req.body.state);
+    if (user.length > 0) {
+        user = user[0];
+        user.startBreak(req.body.duration, req.body.state);
+    }
     res.json(users);
 });
 
 router.post('/stop', function(req, res) {
     let user = users.filter((user) => {
         return user.getID() === req.body.id;
-    })[0];
-    user.stopPomodoro();
+    });
+    if (user.length > 0) {
+        user = user[0];
+        user.stopPomodoro();
+    }
+    res.json(users);
+});
+
+
+router.post('/delete', function(req, res) {
+    users = users.filter((user) => {
+        return user.getID() !== req.body.id;
+    });
     res.json(users);
 });
 
