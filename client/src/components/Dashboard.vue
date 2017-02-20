@@ -228,7 +228,7 @@
     /** Development configuration **/
     prefixURL = '//localhost:3000/';
     /** Production configuration **/
-    //prefixURL = '/';
+    prefixURL = '/';
     export default{
         data(){
             return {
@@ -248,7 +248,7 @@
                 response.json().then((message) => {
                     this.users = message;
                 }, () => {
-                    console.error('Error GET /api/users')
+                    console.error('Error GET /api/users');
                 });
             });
 
@@ -257,7 +257,7 @@
                 self.count.now = Date.now();
             };
             updateNow();
-            window.setInterval(updateNow, 1000)
+            window.setInterval(updateNow, 1000);
         },
         computed: {
             now: function() {
