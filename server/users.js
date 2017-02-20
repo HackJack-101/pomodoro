@@ -47,10 +47,6 @@ class User {
 
 let users = [];
 
-router.get('/', function(req, res) {
-    res.send('Hello World!');
-});
-
 router.get('/users', function(req, res) {
     res.json(users);
 });
